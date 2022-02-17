@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { Modal, Checkbox, Button, Row, Layout, Menu } from 'antd';
+import { Modal, Checkbox, Button, Layout, Menu } from 'antd';
 import { usePanelContext } from '@antv/xflow';
 import AppContext from '../../context';
 import { getProps } from '../../util';
 import { FlowchartProps } from '../../interface';
 import { IProps, ICheckboxOption } from './interface';
-import { CHECKBOX_OPTIONS } from './constants';
+import { CHECKBOX_OPTIONS, TYPE_IMG_MAP } from './constants';
+import { BUILDIN_NODE_TYPES } from '../node-panel/constants';
 import { storage } from '../../util/stroage';
 
 export interface IFooterProps extends IProps {
@@ -17,7 +18,8 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
   const { prefixClz, visibleNodeTypes, setVisibleNodeTypes } = props;
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [checkedValue, setCheckedValue] = useState<string[]>([...visibleNodeTypes]);
-  const [selectedMenuItem, setSelectedMenuItem] = useState(['official']);
+  //被选中的节点分类菜单项
+  const [typeImg, setTypeImg] = useState<string>('official');
 
   const { propsProxy } = usePanelContext<IProps>();
   const panelProps = propsProxy.getValue();
@@ -40,7 +42,7 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
   };
 
   const handleClickMenuItem = ({ key }) => {
-    console.log(key);
+    setTypeImg(key);
   };
 
   return (
@@ -62,16 +64,20 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
         onCancel={() => setIsModalVisible(false)}
         okText="确定"
         cancelText="取消"
-        bodyStyle={{ padding: 0 }}
+        bodyStyle={{ height: 300, padding: 0 }}
       >
-        <Layout>
+        <Layout style={{ height: '100%' }}>
           <Layout.Sider theme="light" width={140}>
             <Checkbox.Group
               value={checkedValue}
               onChange={(values) => setCheckedValue(values as string[])}
-              style={{ width: '100%' }}
+              style={{ width: '100%', height: '100%' }}
             >
-              <Menu style={{ width: '100%' }} defaultSelectedKeys={['official']} onClick={handleClickMenuItem}>
+              <Menu
+                style={{ width: '100%', height: '100%' }}
+                defaultSelectedKeys={['official']}
+                onClick={handleClickMenuItem}
+              >
                 {checkBoxOptions.map((option) => {
                   return (
                     <Menu.Item key={option.value}>
@@ -83,7 +89,15 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
               </Menu>
             </Checkbox.Group>
           </Layout.Sider>
-          <Layout.Content style={{ backgroundColor: '#fff' }}></Layout.Content>
+          <Layout.Content style={{ backgroundColor: '#fff' }}>
+            {BUILDIN_NODE_TYPES.includes(typeImg) ? (
+              <img src={TYPE_IMG_MAP[typeImg]} alt="type" />
+            ) : (
+              <div className={`${prefixClz}-footer-text-wrapper`}>
+                <span className={`${prefixClz}-text`}>自定义节点</span>
+              </div>
+            )}
+          </Layout.Content>
         </Layout>
       </Modal>
     </React.Fragment>

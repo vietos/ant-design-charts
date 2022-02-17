@@ -37,8 +37,8 @@ export const NodeComponent: NsGraph.INodeRender = (props) => {
 
   const { width, height } = size;
   const scale = name === 'Text' ? 2 : 1;
-  const getnodePath = nodePathMap[`${name.replace(/\s+/g, '')}NodePath`];
-  const nodePath = getnodePath(props, rounded);
+  const getNodePath = nodePathMap[`${name.replace(/\s+/g, '')}NodePath`];
+  const nodePath = getNodePath(props, rounded);
 
   //用于解决无法动态修改渐变颜色
   let uuid = '';
