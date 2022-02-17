@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Modal, Checkbox, Button } from 'antd';
+import { Modal, Checkbox, Button, Row, Layout, Menu } from 'antd';
 import { usePanelContext } from '@antv/xflow';
 import AppContext from '../../context';
 import { getProps } from '../../util';
@@ -14,9 +14,11 @@ export interface IFooterProps extends IProps {
 }
 
 export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const { prefixClz, visibleNodeTypes, setVisibleNodeTypes } = props;
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [checkedValue, setCheckedValue] = useState<string[]>([...visibleNodeTypes]);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(['official']);
+
   const { propsProxy } = usePanelContext<IProps>();
   const panelProps = propsProxy.getValue();
 
@@ -29,7 +31,6 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
       disabled: false,
     };
   });
-
   const checkBoxOptions: ICheckboxOption[] = [...CHECKBOX_OPTIONS, ...extraCheckBoxOptions];
 
   const handleModalOk = () => {
@@ -37,6 +38,11 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
     setVisibleNodeTypes([...checkedValue]);
     storage.setItem('visibleNodeTypes', [...checkedValue]);
   };
+
+  const handleClickMenuItem = ({ key }) => {
+    console.log(key);
+  };
+
   return (
     <React.Fragment>
       <div
@@ -56,12 +62,29 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
         onCancel={() => setIsModalVisible(false)}
         okText="确定"
         cancelText="取消"
+        bodyStyle={{ padding: 0 }}
       >
-        <Checkbox.Group
-          options={checkBoxOptions}
-          value={checkedValue}
-          onChange={(values) => setCheckedValue(values as string[])}
-        ></Checkbox.Group>
+        <Layout>
+          <Layout.Sider theme="light" width={140}>
+            <Checkbox.Group
+              value={checkedValue}
+              onChange={(values) => setCheckedValue(values as string[])}
+              style={{ width: '100%' }}
+            >
+              <Menu style={{ width: '100%' }} defaultSelectedKeys={['official']} onClick={handleClickMenuItem}>
+                {checkBoxOptions.map((option) => {
+                  return (
+                    <Menu.Item key={option.value}>
+                      <Checkbox value={option.value} disabled={option.disabled}></Checkbox>
+                      &nbsp;{option.label}
+                    </Menu.Item>
+                  );
+                })}
+              </Menu>
+            </Checkbox.Group>
+          </Layout.Sider>
+          <Layout.Content style={{ backgroundColor: '#fff' }}></Layout.Content>
+        </Layout>
       </Modal>
     </React.Fragment>
   );
