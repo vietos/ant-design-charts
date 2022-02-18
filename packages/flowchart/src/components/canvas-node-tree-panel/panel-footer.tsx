@@ -37,8 +37,12 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
 
   const handleModalOk = () => {
     setIsModalVisible(false);
-    setVisibleNodeTypes([...checkedValue]);
-    storage.setItem('visibleNodeTypes', [...checkedValue]);
+    const visibleNodeTypes: string[] = [];
+    checkBoxOptions.forEach((option) => {
+      checkedValue.includes(option.value) && visibleNodeTypes.push(option.value);
+    });
+    setVisibleNodeTypes(visibleNodeTypes);
+    storage.setItem('visibleNodeTypes', visibleNodeTypes);
   };
 
   const handleModalCancel = () => {
@@ -75,7 +79,10 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
           <Layout.Sider theme="light" width={140}>
             <Checkbox.Group
               value={checkedValue}
-              onChange={(values) => setCheckedValue(values as string[])}
+              onChange={(values) => {
+                console.log(values);
+                setCheckedValue(values as string[]);
+              }}
               style={{ width: '100%', height: '100%' }}
             >
               <Menu
