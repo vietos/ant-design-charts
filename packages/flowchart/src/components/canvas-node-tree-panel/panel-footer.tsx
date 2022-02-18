@@ -38,6 +38,7 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
   const handleModalOk = () => {
     setIsModalVisible(false);
     const visibleNodeTypes: string[] = [];
+    //重新排列 visibleNodeTypes 数组，防止乱序
     checkBoxOptions.forEach((option) => {
       checkedValue.includes(option.value) && visibleNodeTypes.push(option.value);
     });
@@ -80,7 +81,6 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
             <Checkbox.Group
               value={checkedValue}
               onChange={(values) => {
-                console.log(values);
                 setCheckedValue(values as string[]);
               }}
               style={{ width: '100%', height: '100%' }}
