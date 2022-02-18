@@ -41,6 +41,11 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
     storage.setItem('visibleNodeTypes', [...checkedValue]);
   };
 
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+    setCheckedValue([...visibleNodeTypes]);
+  };
+
   const handleClickMenuItem = ({ key }) => {
     setTypeImg(key);
   };
@@ -61,7 +66,7 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
         title="更多节点"
         visible={isModalVisible}
         onOk={handleModalOk}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={handleModalCancel}
         okText="确定"
         cancelText="取消"
         bodyStyle={{ height: 300, padding: 0 }}
@@ -90,13 +95,13 @@ export const NodePanelFooter: React.FC<IFooterProps> = (props) => {
             </Checkbox.Group>
           </Layout.Sider>
           <Layout.Content style={{ backgroundColor: '#fff' }}>
-            {BUILDIN_NODE_TYPES.includes(typeImg) ? (
-              <img src={TYPE_IMG_MAP[typeImg]} alt="type" />
-            ) : (
-              <div className={`${prefixClz}-footer-text-wrapper`}>
+            <div className={`${prefixClz}-footer-content-wrapper`}>
+              {BUILDIN_NODE_TYPES.includes(typeImg) ? (
+                <img src={TYPE_IMG_MAP[typeImg]} alt="type" />
+              ) : (
                 <span className={`${prefixClz}-text`}>自定义节点</span>
-              </div>
-            )}
+              )}
+            </div>
           </Layout.Content>
         </Layout>
       </Modal>
