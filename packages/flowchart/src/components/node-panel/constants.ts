@@ -113,6 +113,22 @@ export const NODEPOOL = [
     label: 'text',
     type: 'official',
   },
+  {
+    name: 'Isosceles Trapezoid',
+    type: 'official',
+  },
+  {
+    name: 'LeftTrapezoid',
+    type: 'official',
+  },
+  {
+    name: 'RightTrapezoid',
+    type: 'official',
+  },
+  {
+    name: 'Ellipse',
+    type: 'official',
+  },
 ];
 
 //内置节点分类
