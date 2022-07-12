@@ -14,7 +14,7 @@ echo "\033[49;32m \n******* start build website *******\n \033[0m"
 
 echo "\033[49;32m \n******* installing dependencies *******\n \033[0m"
 
-yarn
+# yarn
 
 echo "\033[49;32m \n******* building dependencies *******\n \033[0m"
 
