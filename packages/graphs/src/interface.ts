@@ -17,14 +17,18 @@ import {
   NodeConfig as G6NodeConfig,
   ShapeStyle,
   StateStyles,
+  TreeGraphData as G6TreeGraphData,
+  GraphData,
 } from '@antv/g6';
+
+import { MenuConfig } from './plugins';
 
 export interface GraphContainerConfig {
   style?: React.CSSProperties;
   className?: string;
   loading?: boolean;
   loadingTemplate?: React.ReactElement;
-  errorTemplate?: (e: Error) => React.ReactNode;
+  errorTemplate?: React.ReactNode | ((e: Error) => React.ReactNode);
 }
 export interface NodeConfig extends G6NodeConfig {
   value?: any;
@@ -43,7 +47,6 @@ export interface MiniMapConfig {
   refresh?: boolean;
   padding?: number;
 }
-
 export type Shape = Edge | Node;
 export type ShapeCfg = EdgeConfig<string | object> | NodeConfig;
 export type IShapeStyle =
@@ -52,6 +55,11 @@ export type IShapeStyle =
 export type ILabelStyle =
   | LabelStyle
   | ((edge: Shape | ShapeCfg, graph: IGraph | IGroup | undefined, name?: string) => LabelStyle);
+
+export interface FetchLoading {
+  /** 异步请求时的加载动画，仅在配置了异步请求时生效 */
+  fetchLoading?: React.ReactNode | ((item: NodeConfig) => React.ReactNode);
+}
 
 export interface ArrowConfig extends G6ArrowConfig {
   /** 是否展示 */
@@ -122,16 +130,35 @@ export interface BadgeCfg {
   style?: IShapeStyle;
 }
 
-export interface ToolbarCfg {
-  /** toolbar css 类名 */
+type PluginContainer<T> = {
+  /** tooltip css 类名 */
   className?: string;
-  /** toolbar 容器样式 */
+  /** tooltip 容器样式 */
   style?: React.CSSProperties;
+  /** tooltip 容器，默认和 canvas 使用同一父容器 */
+  container?: HTMLDivElement | string | null;
+  /** 自定义模板 */
+  customContent: (item: T) => React.ReactElement;
+};
+
+export interface ToolbarCfg
+  extends Omit<
+    PluginContainer<{
+      zoomIn: () => void;
+      zoomOut: () => void;
+      toggleFullscreen: () => void;
+      fullscreen: boolean;
+    }>,
+    'container'
+  > {
   /** 是否展示 */
   show?: boolean;
   /** 缩放因子 */
   zoomFactor?: number;
-  /** renderIcon，自定义渲染 */
+  /**
+   * @title renderIcon，自定义渲染
+   * @deprecated
+   */
   renderIcon?: ({
     zoomIn,
     zoomOut,
@@ -225,15 +252,7 @@ export interface MarkerCfg {
   style?: ShapeStyle;
 }
 
-export interface TooltipCfg {
-  /** tooltip css 类名 */
-  className?: string;
-  /** tooltip 容器样式 */
-  style?: React.CSSProperties;
-  /** 自定义模板 */
-  customContent: (item?: NodeConfig) => React.ReactElement;
-  /** tooltip 容器，默认和 canvas 使用同一父容器 */
-  container?: HTMLDivElement | string | null;
+export interface TooltipCfg extends PluginContainer<NodeConfig | EdgeConfig> {
   offsetX?: number;
   offsetY?: number;
   /** 是否展示 */
@@ -251,7 +270,7 @@ export type IMarkerCfg = MarkerCfg | ((cfg: CardNodeCfg, graph: IGraph | IGroup 
 export type Datum = Record<string, any>;
 
 // Graph 通用配置
-export interface CommonConfig extends GraphContainerConfig {
+export interface CommonConfig<T = any> extends GraphContainerConfig {
   data: Datum;
   /** 是否缩放节点大小自适应容器 */
   autoFit?: boolean;
@@ -261,7 +280,7 @@ export interface CommonConfig extends GraphContainerConfig {
   height?: number;
   pixelRatio?: number;
   /** 不同组件 layout 有差别，参考对应组件文档 */
-  layout?: any;
+  layout?: T;
   /** 边配置 */
   edgeCfg?: EdgeCfg;
   /** 节点配置 */
@@ -274,6 +293,8 @@ export interface CommonConfig extends GraphContainerConfig {
   toolbarCfg?: ToolbarCfg;
   /** 提示 */
   tooltipCfg?: TooltipCfg;
+  /** 右键菜单 */
+  menuCfg?: MenuConfig;
   /** 交互行为 */
   behaviors?: string[];
   /** 是否开启动画 */
@@ -340,4 +361,6 @@ export {
   Graph,
   IPoint,
   IShape,
+  G6TreeGraphData,
+  GraphData,
 };
